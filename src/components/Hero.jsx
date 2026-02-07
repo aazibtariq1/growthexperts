@@ -44,7 +44,7 @@ const Hero = () => {
                     transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
                 >
                     <a
-                        href="https://wa.me/923186725593?text=Hi!%20I'm%20interested%20in%20a%20free%20audit."
+                        href="https://wa.me/923186725593?text=Hi%20Growth%20Experts,%20I%20saw%20your%20website.%20I'm%20interested%20in%20scaling%20my%20business%20with%20your%20ads%20strategy."
                         target="_blank"
                         rel="noopener noreferrer"
                         className="bg-neon-lime text-black font-bold text-lg px-8 py-4 rounded-lg hover:bg-neon-lime/90 transition-all duration-300 shadow-[0_0_15px_#39FF14] animate-pulse-glow"
