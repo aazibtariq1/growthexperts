@@ -43,43 +43,13 @@ const AIAssistant = () => {
             setCallStatus('loading');
             setErrorMsg('');
             try {
-                // Because we don't have a pre-configured Assistant ID from the Vapi dashboard,
-                // we pass the entire Assistant configuration in code.
-                await vapi.start({
-                    transcriber: {
-                        provider: "deepgram",
-                        model: "nova-2",
-                        language: "en-US",
-                    },
-                    model: {
-                        provider: "groq",
-                        model: "llama-3.1-8b-instant",
-                        temperature: 0.7,
-                        messages: [
-                            {
-                                role: "system",
-                                content: `You are an energetic, highly capable, and ultra-realistic human AI sales assistant for "Growth Experts", a digital marketing agency founded by Aazib Tariq.
-Your primary goal is to answer questions, sound extremely natural, helpful, and professional, and ultimately encourage the user to book a free audit via WhatsApp or contact the agency.
-CRITICAL: Keep your responses VERY concise and conversational (1-2 short sentences max). Do not use lists, bullet points, or complex formatting. Speak exactly like a real human on a phone call. Use filler words like "um" or "ah" occasionally if it feels natural.
+                // If an Assistant ID is provided via ENV, start it. Otherwise throw an error.
+                const assistantId = import.meta.env.VITE_VAPI_ASSISTANT_ID;
+                if (!assistantId) {
+                    throw new Error('VITE_VAPI_ASSISTANT_ID is missing');
+                }
 
-Company Info:
-- Mission: Turn attention into profit through highly effective advertising.
-- Long-Term Vision: Scale into a high-performance digital marketing company worldwide.
-- Focus: Professional Facebook and Instagram Ads (Lead Gen, Conversion Optimization, Audience Targeting, Sales Funnels).
-- Value Prop: Psychology-based advertising, strong offers, high-quality creatives, delivering real measurable business growth, higher conversion rates, and direct revenue growth.
-- Clients: Pakistani and international businesses ready to invest in growth.
-
-Tone: Modern, confident, results-focused, energetic, and friendly. Start by greeting them naturally.`
-                            }
-                        ],
-                    },
-                    voice: {
-                        provider: "11labs", // Ultra-realistic voice
-                        voiceId: "pNInz6obpgDQGcFmaJcg", // Adam voice (professional male) - can be changed
-                    },
-                    name: "Growth Experts Assistant",
-                    firstMessage: "Hey! This is Alex from Growth Experts. How can I help you scale your business today?",
-                });
+                await vapi.start(assistantId);
             } catch (e) {
                 console.error('Failed to start Vapi call:', e);
                 setCallStatus('inactive');
@@ -87,8 +57,10 @@ Tone: Modern, confident, results-focused, energetic, and friendly. Start by gree
                 // Handle specific mobile/network permission errors
                 if (e?.message?.includes('devices') || e?.name === 'NotAllowedError') {
                     setErrorMsg('Mic access denied. Mobile devices require HTTPS to use the microphone.');
+                } else if (e?.message?.includes('VITE_VAPI_ASSISTANT_ID')) {
+                    setErrorMsg('Configuration error: Assistant ID is missing.');
                 } else {
-                    setErrorMsg('Could not access microphone.');
+                    setErrorMsg('Could not access microphone or start AI.');
                 }
             }
         }
