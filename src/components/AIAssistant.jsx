@@ -9,6 +9,26 @@ const AIAssistant = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [callStatus, setCallStatus] = useState('inactive'); // inactive, loading, active
     const [errorMsg, setErrorMsg] = useState('');
+    const [callDuration, setCallDuration] = useState(0);
+
+    // Timer Logic
+    useEffect(() => {
+        let interval;
+        if (callStatus === 'active') {
+            interval = setInterval(() => {
+                setCallDuration((prev) => prev + 1);
+            }, 1000);
+        } else {
+            setCallDuration(0);
+        }
+        return () => clearInterval(interval);
+    }, [callStatus]);
+
+    const formatTime = (seconds) => {
+        const mins = Math.floor(seconds / 60);
+        const secs = seconds % 60;
+        return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    };
 
     useEffect(() => {
         // Vapi Event Listeners
@@ -131,7 +151,7 @@ const AIAssistant = () => {
                                 <p className="text-neon-lime text-base font-medium tracking-wide">Growth Experts AI</p>
 
                                 <p className={`mt-6 text-base transition-colors duration-300 ${callStatus === 'active' ? 'text-white font-medium' : 'text-gray-400'}`}>
-                                    {callStatus === 'inactive' ? 'Incoming Call...' : callStatus === 'loading' ? 'Connecting to secure line...' : '00:00'}
+                                    {callStatus === 'inactive' ? 'Incoming Call...' : callStatus === 'loading' ? 'Connecting to secure line...' : formatTime(callDuration)}
                                 </p>
                                 {callStatus === 'active' && <p className="text-neon-lime text-sm mt-1 animate-pulse">Call in progress</p>}
 
