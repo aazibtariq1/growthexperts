@@ -25,10 +25,10 @@ const Comparison = () => {
     ];
 
     return (
-        <section className="py-24 px-6">
+        <section className="py-16 md:py-24 px-4 md:px-6">
             <div className="max-w-6xl mx-auto">
                 <motion.h2
-                    className="text-3xl md:text-5xl font-bold text-center mb-4"
+                    className="text-2xl sm:text-3xl md:text-5xl font-bold text-center mb-3 md:mb-4"
                     initial={{ opacity: 0, y: 50 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
@@ -37,7 +37,7 @@ const Comparison = () => {
                     Why Most Ads <span className="text-neon-lime">Fail</span>
                 </motion.h2>
                 <motion.p
-                    className="text-gray-400 text-center text-lg mb-16"
+                    className="text-gray-400 text-center text-base md:text-lg mb-10 md:mb-16"
                     initial={{ opacity: 0, y: 30 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
@@ -46,7 +46,9 @@ const Comparison = () => {
                     (And Why Ours Don't)
                 </motion.p>
 
-                <div className="overflow-x-auto">
+                {/* Mobile: Card layout, Desktop: Table */}
+                {/* Desktop Table */}
+                <div className="hidden md:block overflow-x-auto">
                     <motion.table
                         className="w-full min-w-[600px]"
                         initial={{ opacity: 0, y: 50 }}
@@ -88,6 +90,30 @@ const Comparison = () => {
                             ))}
                         </tbody>
                     </motion.table>
+                </div>
+
+                {/* Mobile Cards */}
+                <div className="md:hidden space-y-4">
+                    {comparisons.map((row, index) => (
+                        <motion.div
+                            key={index}
+                            className="bg-surface rounded-xl p-5 border border-gray-800"
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ duration: 0.4, delay: 0.1 * index }}
+                        >
+                            <h3 className="font-bold text-lg mb-3">{row.category}</h3>
+                            <div className="flex items-center gap-2 text-gray-400 mb-2">
+                                <span className="text-red-500">❌</span>
+                                <span className="italic text-sm">{row.others}</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <span className="text-neon-lime">✅</span>
+                                <span className="text-neon-lime font-semibold text-sm">{row.us}</span>
+                            </div>
+                        </motion.div>
+                    ))}
                 </div>
             </div>
         </section>
