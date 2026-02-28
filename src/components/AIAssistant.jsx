@@ -8,6 +8,7 @@ const vapi = new Vapi(import.meta.env.VITE_VAPI_PUBLIC_KEY);
 const AIAssistant = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [callStatus, setCallStatus] = useState('inactive'); // inactive, loading, active
+    const [errorMsg, setErrorMsg] = useState('');
 
     useEffect(() => {
         // Vapi Event Listeners
@@ -23,6 +24,7 @@ const AIAssistant = () => {
         vapi.on('error', (e) => {
             console.error('Vapi Error:', e);
             setCallStatus('inactive');
+            setErrorMsg('Connection error. Please try again.');
         });
 
         return () => {
@@ -39,6 +41,7 @@ const AIAssistant = () => {
             vapi.stop();
         } else {
             setCallStatus('loading');
+            setErrorMsg('');
             try {
                 // Because we don't have a pre-configured Assistant ID from the Vapi dashboard,
                 // we pass the entire Assistant configuration in code.
@@ -79,6 +82,13 @@ Tone: Modern, confident, results-focused, energetic, and friendly. Start by gree
             } catch (e) {
                 console.error('Failed to start Vapi call:', e);
                 setCallStatus('inactive');
+
+                // Handle specific mobile/network permission errors
+                if (e?.message?.includes('devices') || e?.name === 'NotAllowedError') {
+                    setErrorMsg('Mic access denied. Mobile devices require HTTPS to use the microphone.');
+                } else {
+                    setErrorMsg('Could not access microphone.');
+                }
             }
         }
     };
@@ -137,6 +147,12 @@ Tone: Modern, confident, results-focused, energetic, and friendly. Start by gree
                             <p className={`mt-4 text-sm transition-colors duration-300 ${callStatus === 'active' ? 'text-white' : 'text-gray-400'}`}>
                                 {callStatus === 'inactive' ? 'Ready for your free audit?' : callStatus === 'loading' ? 'Connecting secure line...' : '00:00 - Call in progress'}
                             </p>
+
+                            {errorMsg && (
+                                <p className="mt-3 text-xs text-red-500 bg-red-500/10 border border-red-500/20 py-2 px-3 rounded-lg animate-pulse">
+                                    {errorMsg}
+                                </p>
+                            )}
                         </div>
 
                         <div className="flex justify-center items-center gap-6 relative z-10">
