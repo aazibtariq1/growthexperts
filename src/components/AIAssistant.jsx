@@ -53,7 +53,7 @@ const AIAssistant = () => {
                     },
                     model: {
                         provider: "groq",
-                        model: "llama-3.3-70b-versatile",
+                        model: "llama-3.1-8b-instant",
                         temperature: 0.7,
                         messages: [
                             {
@@ -78,6 +78,7 @@ Tone: Modern, confident, results-focused, energetic, and friendly. Start by gree
                         voiceId: "pNInz6obpgDQGcFmaJcg", // Adam voice (professional male) - can be changed
                     },
                     name: "Growth Experts Assistant",
+                    firstMessage: "Hey! This is Alex from Growth Experts. How can I help you scale your business today?",
                 });
             } catch (e) {
                 console.error('Failed to start Vapi call:', e);
