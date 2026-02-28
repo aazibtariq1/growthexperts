@@ -1,22 +1,63 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import Vapi from '@vapi-ai/web';
+
+// Initialize Vapi with the provided Public Key
+const vapi = new Vapi(import.meta.env.VITE_VAPI_PUBLIC_KEY);
 
 const AIAssistant = () => {
     const [isOpen, setIsOpen] = useState(false);
-    const [isListening, setIsListening] = useState(false);
-    const [isThinking, setIsThinking] = useState(false);
-    const [isSpeaking, setIsSpeaking] = useState(false);
-    const [transcript, setTranscript] = useState('');
-    const [response, setResponse] = useState('');
-    const [inputText, setInputText] = useState('');
+    const [callStatus, setCallStatus] = useState('inactive'); // inactive, loading, active
 
-    // Conversation history to maintain context
-    const [messages, setMessages] = useState([
-        {
-            role: 'system',
-            content: `You are an energetic, highly capable, and human-like AI sales assistant for "Growth Experts", a digital marketing agency founded by Aazib Tariq.
+    useEffect(() => {
+        // Vapi Event Listeners
+        vapi.on('call-start', () => {
+            setCallStatus('active');
+        });
+
+        vapi.on('call-end', () => {
+            setCallStatus('inactive');
+            setIsOpen(false);
+        });
+
+        vapi.on('error', (e) => {
+            console.error('Vapi Error:', e);
+            setCallStatus('inactive');
+        });
+
+        return () => {
+            vapi.removeAllListeners();
+            if (callStatus === 'active') {
+                vapi.stop();
+            }
+        };
+    }, []);
+
+    const toggleCall = async () => {
+        if (callStatus === 'active' || callStatus === 'loading') {
+            setCallStatus('inactive');
+            vapi.stop();
+        } else {
+            setCallStatus('loading');
+            try {
+                // Because we don't have a pre-configured Assistant ID from the Vapi dashboard,
+                // we pass the entire Assistant configuration in code.
+                await vapi.start({
+                    transcriber: {
+                        provider: "deepgram",
+                        model: "nova-2",
+                        language: "en-US",
+                    },
+                    model: {
+                        provider: "groq",
+                        model: "llama-3.3-70b-versatile",
+                        temperature: 0.7,
+                        messages: [
+                            {
+                                role: "system",
+                                content: `You are an energetic, highly capable, and ultra-realistic human AI sales assistant for "Growth Experts", a digital marketing agency founded by Aazib Tariq.
 Your primary goal is to answer questions, sound extremely natural, helpful, and professional, and ultimately encourage the user to book a free audit via WhatsApp or contact the agency.
-CRITICAL: Keep your responses VERY concise and conversational (1-3 very short sentences max) because they will be read out loud by a voice synthesizer. Do not use lists, bullet points, or complex formatting. Speak like a real human on a phone call.
+CRITICAL: Keep your responses VERY concise and conversational (1-2 short sentences max). Do not use lists, bullet points, or complex formatting. Speak exactly like a real human on a phone call. Use filler words like "um" or "ah" occasionally if it feels natural.
 
 Company Info:
 - Mission: Turn attention into profit through highly effective advertising.
@@ -26,148 +67,33 @@ Company Info:
 - Clients: Pakistani and international businesses ready to invest in growth.
 
 Tone: Modern, confident, results-focused, energetic, and friendly. Start by greeting them naturally.`
-        }
-    ]);
-
-    const recognitionRef = useRef(null);
-    const synthRef = useRef(window.speechSynthesis);
-
-    useEffect(() => {
-        // Initialize Speech Recognition
-        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-        if (SpeechRecognition) {
-            recognitionRef.current = new SpeechRecognition();
-            recognitionRef.current.continuous = false;
-            recognitionRef.current.interimResults = false;
-            recognitionRef.current.lang = 'en-US';
-
-            recognitionRef.current.onstart = () => {
-                setIsListening(true);
-                setTranscript('Listening...');
-            };
-
-            recognitionRef.current.onresult = async (event) => {
-                const text = event.results[0][0].transcript;
-                setTranscript(text);
-                setIsListening(false);
-                await handleAIResponse(text);
-            };
-
-            recognitionRef.current.onerror = (event) => {
-                console.error('Speech recognition error', event.error);
-                setIsListening(false);
-                setTranscript('Try again...');
-            };
-
-            recognitionRef.current.onend = () => {
-                setIsListening(false);
-            };
-        }
-
-        return () => {
-            if (synthRef.current) {
-                synthRef.current.cancel();
+                            }
+                        ],
+                    },
+                    voice: {
+                        provider: "11labs", // Ultra-realistic voice
+                        voiceId: "pNInz6obpgDQGcFmaJcg", // Adam voice (professional male) - can be changed
+                    },
+                    name: "Growth Experts Assistant",
+                });
+            } catch (e) {
+                console.error('Failed to start Vapi call:', e);
+                setCallStatus('inactive');
             }
-        };
-    }, [messages]);
-
-    const handleAIResponse = async (userText) => {
-        setIsThinking(true);
-        setResponse('Thinking...');
-
-        const newMessages = [...messages, { role: 'user', content: userText }];
-        setMessages(newMessages);
-
-        try {
-            const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${import.meta.env.VITE_GROQ_API_KEY}`
-                },
-                body: JSON.stringify({
-                    model: 'llama-3.3-70b-versatile',
-                    messages: newMessages,
-                    temperature: 0.7,
-                    max_tokens: 150
-                })
-            });
-
-            const data = await res.json();
-            if (data.choices && data.choices.length > 0) {
-                const aiText = data.choices[0].message.content;
-                setResponse(aiText);
-                setMessages([...newMessages, { role: 'assistant', content: aiText }]);
-                speakOutLoud(aiText);
-            } else {
-                setResponse('Oops, I had a brain freeze.');
-            }
-        } catch (error) {
-            console.error('Error fetching Groq:', error);
-            setResponse('Sorry, connection issue.');
-        } finally {
-            setIsThinking(false);
         }
     };
 
-    const speakOutLoud = (text) => {
-        if (!synthRef.current) return;
-
-        synthRef.current.cancel(); // Stop anything currently playing
-
-        const utterance = new SpeechSynthesisUtterance(text);
-
-        // Try to find a good English voice
-        const voices = synthRef.current.getVoices();
-        const preferredVoice = voices.find(v => v.name.includes('Google US English') || v.name.includes('Samantha') || v.lang === 'en-US');
-        if (preferredVoice) {
-            utterance.voice = preferredVoice;
-        }
-
-        utterance.rate = 1.05; // Slightly faster sounds more energetic
-        utterance.pitch = 1.0;
-
-        utterance.onstart = () => setIsSpeaking(true);
-        utterance.onend = () => {
-            setIsSpeaking(false);
-            // Optionally auto-restart listening here if you want a continuous conversation,
-            // but for a web widget, click-to-talk is usually safer.
-        };
-
-        synthRef.current.speak(utterance);
-    };
-
-    const toggleAssistant = () => {
+    const handleOpenToggle = () => {
         if (!isOpen) {
             setIsOpen(true);
-            // Greet when opened if conversation just started
-            if (messages.length === 1) {
-                handleAIResponse("Hi, I just opened the voice assistant. Please introduce yourself briefly.");
-            }
         } else {
             setIsOpen(false);
-            synthRef.current.cancel();
-            if (isListening && recognitionRef.current) {
-                recognitionRef.current.stop();
+            if (callStatus === 'active' || callStatus === 'loading') {
+                vapi.stop();
+                setCallStatus('inactive');
             }
         }
     };
-
-    const startListening = () => {
-        if (recognitionRef.current && !isListening && !isThinking && !isSpeaking) {
-            synthRef.current.cancel();
-            try {
-                recognitionRef.current.start();
-            } catch (e) {
-                console.error("Recognition already started");
-            }
-        }
-    };
-
-    // If API isn't supported
-    if (!window.SpeechRecognition && !window.webkitSpeechRecognition) {
-        return null;
-    }
 
     return (
         <div className="fixed bottom-24 right-6 z-50 flex flex-col items-end">
@@ -177,90 +103,54 @@ Tone: Modern, confident, results-focused, energetic, and friendly. Start by gree
                         initial={{ opacity: 0, y: 20, scale: 0.9 }}
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: 20, scale: 0.9 }}
-                        className="mb-4 bg-surface border border-gray-800 rounded-2xl p-5 shadow-[0_0_30px_rgba(57,255,20,0.15)] w-[300px] md:w-[350px]"
+                        className="mb-4 bg-surface border border-gray-800 rounded-2xl p-6 shadow-[0_0_40px_rgba(57,255,20,0.15)] w-[300px] md:w-[350px]"
                     >
-                        <div className="flex justify-between items-center mb-4 border-b border-gray-800 pb-3">
+                        <div className="flex justify-between items-center mb-6 border-b border-gray-800 pb-4">
                             <h3 className="font-bold text-white flex items-center gap-2">
                                 <span className="relative flex h-3 w-3">
-                                    <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${isThinking || isSpeaking || isListening ? 'bg-neon-lime' : 'bg-gray-500'}`}></span>
-                                    <span className={`relative inline-flex rounded-full h-3 w-3 ${isThinking || isSpeaking || isListening ? 'bg-neon-lime' : 'bg-gray-500'}`}></span>
+                                    <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${callStatus === 'active' ? 'bg-neon-lime' : callStatus === 'loading' ? 'bg-yellow-500' : 'bg-gray-500'}`}></span>
+                                    <span className={`relative inline-flex rounded-full h-3 w-3 ${callStatus === 'active' ? 'bg-neon-lime' : callStatus === 'loading' ? 'bg-yellow-500' : 'bg-gray-500'}`}></span>
                                 </span>
-                                AI Sales Agent
+                                AI Sales Partner
                             </h3>
-                            <button onClick={toggleAssistant} className="text-gray-400 hover:text-white">
+                            <button onClick={handleOpenToggle} className="text-gray-400 hover:text-white transition-colors">
                                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
                             </button>
                         </div>
 
-                        <div className="h-[120px] overflow-y-auto mb-4 text-sm text-gray-300 flex flex-col justify-end">
-                            {transcript && (
-                                <div className="mb-2 text-right">
-                                    <span className="bg-gray-800 text-white px-3 py-1.5 rounded-lg inline-block rounded-br-none">{transcript}</span>
-                                </div>
-                            )}
-                            {response && (
-                                <div className="text-left">
-                                    <span className="bg-neon-lime/10 text-neon-lime border border-neon-lime/20 px-3 py-1.5 rounded-lg inline-block rounded-bl-none">{response}</span>
-                                </div>
-                            )}
+                        <div className="text-center mb-6">
+                            <div className={`w-20 h-20 mx-auto rounded-full flex items-center justify-center mb-4 transition-all duration-500 ${callStatus === 'active' ? 'bg-neon-lime/20 shadow-[0_0_30px_rgba(57,255,20,0.4)]' : 'bg-gray-800'}`}>
+                                <svg className={`w-10 h-10 ${callStatus === 'active' ? 'text-neon-lime animate-pulse' : 'text-gray-400'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+                                </svg>
+                            </div>
+                            <p className="text-sm text-gray-400">
+                                {callStatus === 'inactive' ? 'Ready to talk?' : callStatus === 'loading' ? 'Connecting to AI...' : 'Call in progress. Say hi!'}
+                            </p>
                         </div>
 
-                        <form
-                            onSubmit={(e) => {
-                                e.preventDefault();
-                                if (inputText.trim() && !isThinking) {
-                                    setTranscript(inputText);
-                                    handleAIResponse(inputText);
-                                    setInputText('');
-                                }
-                            }}
-                            className="flex gap-2 mb-3"
-                        >
-                            <input
-                                type="text"
-                                value={inputText}
-                                onChange={(e) => setInputText(e.target.value)}
-                                placeholder="Or type your message..."
-                                className="flex-1 bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-neon-lime transition-colors"
-                                disabled={isThinking}
-                            />
-                            <button
-                                type="submit"
-                                disabled={!inputText.trim() || isThinking}
-                                className="bg-gray-800 text-neon-lime px-3 py-2 rounded-lg font-bold disabled:opacity-50 hover:bg-gray-700 transition-colors"
-                            >
-                                Send
-                            </button>
-                        </form>
-
                         <button
-                            onClick={startListening}
-                            disabled={isListening || isThinking}
-                            className={`w-full py-3 rounded-xl font-bold transition-all duration-300 flex items-center justify-center gap-2
-                                ${isListening ? 'bg-red-500 text-white animate-pulse' :
-                                    isThinking ? 'bg-gray-700 text-gray-400 cursor-not-allowed' :
-                                        isSpeaking ? 'bg-blue-500 text-white animate-pulse' :
-                                            'bg-neon-lime text-black hover:bg-neon-lime/90 hover:shadow-[0_0_15px_rgba(57,255,20,0.4)]'}`}
+                            onClick={toggleCall}
+                            disabled={callStatus === 'loading'}
+                            className={`w-full py-3.5 rounded-xl font-bold transition-all duration-300 flex items-center justify-center gap-2
+                                ${callStatus === 'active' ? 'bg-red-500 hover:bg-red-600 text-white shadow-[0_0_15px_rgba(239,68,68,0.4)]' :
+                                    callStatus === 'loading' ? 'bg-gray-700 text-gray-400 cursor-not-allowed' :
+                                        'bg-neon-lime text-black hover:bg-neon-lime/90 hover:shadow-[0_0_20px_rgba(57,255,20,0.4)]'}`}
                         >
-                            {isListening ? (
+                            {callStatus === 'active' ? (
                                 <>
-                                    <svg className="w-5 h-5 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" /></svg>
-                                    Listening...
+                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 10a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z" /></svg>
+                                    End Call
                                 </>
-                            ) : isThinking ? (
+                            ) : callStatus === 'loading' ? (
                                 <>
                                     <svg className="w-5 h-5 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
-                                    Thinking...
-                                </>
-                            ) : isSpeaking ? (
-                                <>
-                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" /></svg>
-                                    Speaking...
+                                    Connecting...
                                 </>
                             ) : (
                                 <>
-                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" /></svg>
-                                    Tap to Speak
+                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" /></svg>
+                                    Start Live Call
                                 </>
                             )}
                         </button>
@@ -271,20 +161,20 @@ Tone: Modern, confident, results-focused, energetic, and friendly. Start by gree
             {/* Float Button */}
             {!isOpen && (
                 <motion.button
-                    onClick={toggleAssistant}
+                    onClick={handleOpenToggle}
                     className="bg-black border border-neon-lime text-neon-lime w-14 h-14 rounded-full flex items-center justify-center shadow-[0_4px_20px_rgba(57,255,20,0.3)] hover:shadow-[0_4px_30px_rgba(57,255,20,0.5)] hover:scale-110 transition-all duration-300 relative group"
                     initial={{ scale: 0, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
                     transition={{ duration: 0.5, delay: 1.0, type: 'spring', stiffness: 200 }}
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.95 }}
-                    aria-label="Talk to AI"
+                    aria-label="Call AI"
                 >
                     <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9.75 3.104v5.714a2.25 2.25 0 01-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 014.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 15.3M14.25 3.104c.251.023.501.05.75.082M19.8 15.3l-1.57.393A9.065 9.065 0 0112 15a9.065 9.065 0 00-6.23-.693L5 14.5m14.8.8l1.402 1.402c1.232 1.232.65 3.318-1.067 3.611A48.309 48.309 0 0112 21c-2.773 0-5.491-.235-8.135-.687-1.718-.293-2.3-2.379-1.067-3.61L5 14.5" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                     </svg>
                     <span className="absolute -top-10 -right-2 bg-neon-lime text-black text-xs font-bold px-3 py-1 rounded w-max opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
-                        Talk to AI Sales Agent
+                        Call AI Sales Partner
                     </span>
                     <span className="absolute inset-0 rounded-full border border-neon-lime animate-ping opacity-50"></span>
                 </motion.button>
