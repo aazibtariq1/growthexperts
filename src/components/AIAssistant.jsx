@@ -148,7 +148,7 @@ const AIAssistant = () => {
                                 </div>
 
                                 <h2 className="text-3xl font-bold text-white mb-2 tracking-tight">Alex</h2>
-                                <p className="text-neon-lime text-base font-medium tracking-wide">Growth Experts AI</p>
+                                <p className="text-neon-lime text-base font-medium tracking-wide">Senior Growth Advisor</p>
 
                                 <p className={`mt-6 text-base transition-colors duration-300 ${callStatus === 'active' ? 'text-white font-medium' : 'text-gray-400'}`}>
                                     {callStatus === 'inactive' ? 'Incoming Call...' : callStatus === 'loading' ? 'Connecting to secure line...' : formatTime(callDuration)}
@@ -217,13 +217,13 @@ const AIAssistant = () => {
                         transition={{ duration: 0.5, delay: 0.5, type: 'spring', stiffness: 200 }}
                         whileHover={{ scale: 1.1 }}
                         whileTap={{ scale: 0.95 }}
-                        aria-label="Call AI"
+                        aria-label="Talk to an Expert"
                     >
                         <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                         </svg>
                         <span className="absolute -top-10 -right-2 bg-neon-lime text-black text-xs font-bold px-3 py-1 rounded w-max opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
-                            Call AI Sales Partner
+                            Talk to an Expert
                         </span>
                         <span className="absolute inset-0 rounded-full border border-neon-lime animate-[ping_2s_ease-out_infinite] opacity-50"></span>
                     </motion.button>
