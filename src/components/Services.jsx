@@ -3,22 +3,24 @@ import { motion } from 'framer-motion';
 const Services = () => {
     const services = [
         {
-            title: 'Facebook Ads',
-            description: 'Hyper-targeted campaigns that convert cold audiences into paying customers.',
+            title: 'Meta Ads (Facebook & IG)',
+            description: 'Hyper-targeted campaigns across Facebook & Instagram that convert cold audiences into paying customers.',
             icon: (
-                <svg className="w-10 h-10 md:w-12 md:h-12" fill="none" stroke="white" strokeWidth="1.8" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z" />
-                </svg>
+                <img
+                    src="/meta-logo.svg"
+                    alt="Meta"
+                    className="w-10 h-10 md:w-12 md:h-12 brightness-0 invert group-hover:invert-0 group-hover:brightness-100 transition-all duration-300"
+                    style={{ filter: 'brightness(0) invert(1)' }}
+                />
             ),
         },
         {
-            title: 'Instagram Ads',
-            description: 'Visual storytelling that stops the scroll and drives action.',
+            title: 'Google Maps & Local SEO',
+            description: 'Dominate your local market and rank #1 when nearby customers search for your exact services.',
             icon: (
                 <svg className="w-10 h-10 md:w-12 md:h-12" fill="none" stroke="white" strokeWidth="1.8" viewBox="0 0 24 24">
-                    <rect x="2" y="2" width="20" height="20" rx="5" ry="5" strokeLinecap="round" strokeLinejoin="round" />
-                    <circle cx="12" cy="12" r="4" strokeLinecap="round" strokeLinejoin="round" />
-                    <circle cx="17.5" cy="6.5" r="0.5" fill="white" stroke="none" />
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                 </svg>
             ),
         },
