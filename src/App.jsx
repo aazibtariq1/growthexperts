@@ -36,8 +36,18 @@ function App() {
                     <div className="text-xl md:text-2xl font-bold">
                         <span className="text-neon-lime">Growth</span> Experts
                     </div>
-                    <p className="text-gray-500 text-xs md:text-sm">
-                        © 2026 Growth Experts. All rights reserved.
+                    <p className="text-gray-500 text-xs md:text-sm text-center md:text-right">
+                        © 2026 Growth Experts. All rights reserved. <br className="md:hidden" />
+                        <span className="hidden md:inline"> | </span>
+                        Developed by{' '}
+                        <a
+                            href="https://www.linkedin.com/in/aazibtariq"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-gray-400 hover:text-neon-lime transition-colors duration-300 font-semibold"
+                        >
+                            Aazib Tariq
+                        </a>
                     </p>
                 </div>
             </footer>
