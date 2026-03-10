@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import { WHATSAPP_URL } from '../constants';
 
 const Hero = () => {
     return (
@@ -41,7 +42,7 @@ const Hero = () => {
                     transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
                 >
                     <a
-                        href="https://wa.me/923186725593?text=Hi%20Growth%20Experts,%20I%20saw%20your%20website.%20I'm%20interested%20in%20scaling%20my%20business%20with%20your%20ads%20strategy."
+                        href={WHATSAPP_URL}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="w-full sm:w-auto text-center bg-neon-lime text-black font-bold text-base md:text-lg px-6 md:px-8 py-3.5 md:py-4 rounded-lg hover:bg-neon-lime/90 transition-all duration-300 shadow-[0_0_15px_#39FF14] animate-pulse-glow"
@@ -49,7 +50,7 @@ const Hero = () => {
                         Get My Free Audit ➔
                     </a>
 
-                    <a href="#results" className="text-white underline underline-offset-4 hover:text-neon-lime transition-colors duration-300 text-sm md:text-base">
+                    <a href="#/results" className="text-white underline underline-offset-4 hover:text-neon-lime transition-colors duration-300 text-sm md:text-base">
                         See our results
                     </a>
                 </motion.div>

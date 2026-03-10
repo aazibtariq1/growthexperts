@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import { WHATSAPP_URL } from '../constants';
 
 const FinalCTA = () => {
     return (
@@ -29,7 +30,7 @@ const FinalCTA = () => {
                 </motion.p>
 
                 <motion.a
-                    href="https://wa.me/923186725593?text=Hi%20Growth%20Experts,%20I%20saw%20your%20website.%20I'm%20interested%20in%20scaling%20my%20business%20with%20your%20ads%20strategy."
+                    href={WHATSAPP_URL}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-3 w-full sm:w-auto bg-neon-lime text-black font-bold text-lg md:text-xl px-10 md:px-16 py-5 md:py-6 rounded-xl hover:bg-neon-lime/90 transition-all duration-300 animate-pulse-glow justify-center"

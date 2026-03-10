@@ -1,56 +1,78 @@
+import React, { Suspense, useState, useEffect } from 'react';
 import Hero from './components/Hero';
 import Marquee from './components/Marquee';
 import Comparison from './components/Comparison';
 import Process from './components/Process';
 import Services from './components/Services';
+import Portfolio from './components/Portfolio';
+import Testimonials from './components/Testimonials';
+import FAQ from './components/FAQ';
 import FinalCTA from './components/FinalCTA';
-import ParticleBackground from './components/ParticleBackground';
+import Footer from './components/Footer';
+import LoadingScreen from './components/LoadingScreen';
 import Navbar from './components/Navbar';
 import CursorGlow from './components/CursorGlow';
 import FloatingWhatsApp from './components/FloatingWhatsApp';
 import UrgencyBanner from './components/UrgencyBanner';
-import AIAssistant from './components/AIAssistant';
+
+// Lazy load heavy components
+const ParticleBackground = React.lazy(() => import('./components/ParticleBackground'));
+const AIAssistant = React.lazy(() => import('./components/AIAssistant'));
 
 function App() {
+    const [currentPath, setCurrentPath] = useState(window.location.hash);
+
+    useEffect(() => {
+        const onHashChange = () => setCurrentPath(window.location.hash);
+        window.addEventListener('hashchange', onHashChange);
+        return () => window.removeEventListener('hashchange', onHashChange);
+    }, []);
+
+    const isResultsPage = currentPath === '#/results';
+
     return (
         <div className="bg-deep-black min-h-screen">
+            <LoadingScreen />
+
             {/* Global overlays */}
-            <ParticleBackground />
+            <Suspense fallback={null}>
+                <ParticleBackground />
+            </Suspense>
             <CursorGlow />
             <UrgencyBanner />
             <Navbar />
             <FloatingWhatsApp />
-            <AIAssistant />
+            <Suspense fallback={null}>
+                <AIAssistant />
+            </Suspense>
 
             {/* Page sections */}
-            <Hero />
-            <Marquee />
-            <Comparison />
-            <Process />
-            <Services />
-            <FinalCTA />
-
-            {/* Footer */}
-            <footer className="py-8 px-4 md:px-6 border-t border-gray-800">
-                <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
-                    <div className="text-xl md:text-2xl font-bold">
-                        <span className="text-neon-lime">Growth</span> Experts
+            {isResultsPage ? (
+                <div className="pt-24 min-h-screen relative z-10 flex flex-col">
+                    <Portfolio />
+                    <Testimonials />
+                    <div className="mt-auto">
+                        <Footer />
                     </div>
-                    <p className="text-gray-500 text-xs md:text-sm text-center md:text-right">
-                        © 2026 Growth Experts. All rights reserved. <br className="md:hidden" />
-                        <span className="hidden md:inline"> | </span>
-                        Developed by{' '}
-                        <a
-                            href="https://www.linkedin.com/in/aazibtariq"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-gray-400 hover:text-neon-lime transition-colors duration-300 font-semibold"
-                        >
-                            Aazib Tariq
-                        </a>
-                    </p>
                 </div>
-            </footer>
+            ) : (
+                <>
+                    <Hero />
+                    <Marquee />
+                    <Comparison />
+                    <div id="process">
+                        <Process />
+                    </div>
+                    <div id="services">
+                        <Services />
+                    </div>
+                    <div id="faq">
+                        <FAQ />
+                    </div>
+                    <FinalCTA />
+                    <Footer />
+                </>
+            )}
         </div>
     );
 }

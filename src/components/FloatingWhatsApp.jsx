@@ -1,9 +1,10 @@
 import { motion } from 'framer-motion';
+import { WHATSAPP_URL } from '../constants';
 
 const FloatingWhatsApp = () => {
     return (
         <motion.a
-            href="https://wa.me/923186725593?text=Hi%20Growth%20Experts,%20I%20saw%20your%20website.%20I'm%20interested%20in%20scaling%20my%20business%20with%20your%20ads%20strategy."
+            href={WHATSAPP_URL}
             target="_blank"
             rel="noopener noreferrer"
             className="fixed bottom-6 right-6 z-50 bg-[#25D366] w-14 h-14 rounded-full flex items-center justify-center shadow-[0_4px_20px_rgba(37,211,102,0.4)] hover:shadow-[0_4px_30px_rgba(37,211,102,0.6)] hover:scale-110 transition-all duration-300"

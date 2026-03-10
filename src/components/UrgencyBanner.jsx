@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { WHATSAPP_URL } from '../constants';
 
 const UrgencyBanner = () => {
     const [visible, setVisible] = useState(true);
@@ -22,7 +23,7 @@ const UrgencyBanner = () => {
                             <span className="text-white font-medium">Only taking 5 new clients this month</span>
                             <span className="text-gray-400 mx-1 md:mx-2">—</span>
                             <a
-                                href="https://wa.me/923186725593?text=Hi%20Growth%20Experts,%20I%20saw%20your%20website.%20I'm%20interested%20in%20scaling%20my%20business%20with%20your%20ads%20strategy."
+                                href={WHATSAPP_URL}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="text-neon-lime font-bold underline underline-offset-2 hover:text-white transition-colors"
