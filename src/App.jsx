@@ -1,6 +1,7 @@
 import React, { Suspense, useState, useEffect } from 'react';
 import Hero from './components/Hero';
 import Marquee from './components/Marquee';
+// import Stats from './components/Stats'; // Removed for BIC submission
 import Comparison from './components/Comparison';
 import Process from './components/Process';
 import Services from './components/Services';
@@ -59,6 +60,7 @@ function App() {
                 <>
                     <Hero />
                     <Marquee />
+                    {/* Stats section removed — no fake numbers */}
                     <Comparison />
                     <div id="process">
                         <Process />

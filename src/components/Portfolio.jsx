@@ -1,37 +1,26 @@
 import { motion } from 'framer-motion';
+import { WHATSAPP_URL } from '../constants';
 
 const Portfolio = () => {
-    const caseStudies = [
+    const methodology = [
         {
-            client: 'E-commerce Brand',
-            industry: 'Apparel',
-            challenge: 'High CPA and stagnant ROAS on Meta Ads.',
-            solution: 'Implemented dynamic creative testing and Lookalike audience scaling.',
-            results: [
-                { metric: 'Monthly Revenue', old: '$15k', new: '$85k' },
-                { metric: 'ROAS', old: '1.8x', new: '4.2x' }
-            ]
+            step: '01',
+            title: 'Deep-Dive Audit',
+            description: 'We analyze your current ad accounts, funnels, competitors, and target audience to find exactly where money is being wasted and where the biggest growth opportunities are.',
+            deliverables: ['Ad Account Analysis', 'Competitor Research', 'Audience Mapping'],
         },
         {
-            client: 'Local MedSpa',
-            industry: 'Healthcare / Local Service',
-            challenge: 'Empty calendar, relying on word of mouth.',
-            solution: 'Google Maps SEO + targeted Meta Lead Generation for specific treatments.',
-            results: [
-                { metric: 'New Leads/Mo', old: '12', new: '145' },
-                { metric: 'Cost Per Lead', old: '$55', new: '$12' }
-            ]
+            step: '02',
+            title: 'Strategy & Creative Build',
+            description: 'We craft a custom advertising strategy with psychology-driven creatives, high-converting copy, and a funnel designed to turn cold traffic into paying customers.',
+            deliverables: ['Creative Strategy', 'Funnel Architecture', 'Ad Copy & Visuals'],
         },
         {
-            client: 'B2B SaaS',
-            industry: 'Software',
-            challenge: 'Low quality demo bookings.',
-            solution: 'Redesigned landing page funnel and shifted focus to high-intent Google Search campaigns.',
-            results: [
-                { metric: 'Demo Bookings', old: '8/mo', new: '42/mo' },
-                { metric: 'Close Rate', old: '10%', new: '28%' }
-            ]
-        }
+            step: '03',
+            title: 'Launch, Test & Optimize',
+            description: 'We launch campaigns, run rapid A/B tests, kill underperformers within 48 hours, and scale winning combinations. Every decision is driven by data, not guesses.',
+            deliverables: ['Campaign Management', 'A/B Testing', 'Weekly Reporting'],
+        },
     ];
 
     return (
@@ -58,12 +47,12 @@ const Portfolio = () => {
                         viewport={{ once: true }}
                         transition={{ duration: 0.6, delay: 0.1 }}
                     >
-                        Real results from real campaigns. Here's how we've scaled businesses just like yours.
+                        Our proven methodology for scaling businesses through paid advertising.
                     </motion.p>
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
-                    {caseStudies.map((study, index) => (
+                    {methodology.map((item, index) => (
                         <motion.div
                             key={index}
                             className="bg-deep-black border border-gray-800 rounded-2xl p-6 md:p-8 hover:border-neon-lime/50 transition-colors duration-500 group relative overflow-hidden flex flex-col h-full"
@@ -74,49 +63,60 @@ const Portfolio = () => {
                         >
                             {/* Subtle hover background */}
                             <div className="absolute inset-0 bg-gradient-to-b from-transparent to-neon-lime/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
-                            
+
                             <div className="relative z-10 flex-grow">
                                 <div className="flex justify-between items-start mb-6">
                                     <div>
-                                        <h3 className="text-xl md:text-2xl font-bold text-white mb-1 group-hover:text-neon-lime transition-colors">{study.client}</h3>
-                                        <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">{study.industry}</span>
+                                        <span className="text-neon-lime font-data text-4xl font-bold opacity-30 group-hover:opacity-60 transition-opacity">{item.step}</span>
+                                        <h3 className="text-xl md:text-2xl font-bold text-white mt-2 group-hover:text-neon-lime transition-colors">{item.title}</h3>
                                     </div>
                                     <svg className="w-8 h-8 text-gray-700 group-hover:text-neon-lime transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
                                     </svg>
                                 </div>
-                                
-                                <div className="space-y-4 mb-8">
-                                    <div>
-                                        <h4 className="text-sm font-semibold text-gray-400 mb-1">The Challenge</h4>
-                                        <p className="text-sm text-gray-300">{study.challenge}</p>
-                                    </div>
-                                    <div>
-                                        <h4 className="text-sm font-semibold text-gray-400 mb-1">Our Solution</h4>
-                                        <p className="text-sm text-gray-300">{study.solution}</p>
-                                    </div>
-                                </div>
+
+                                <p className="text-sm text-gray-300 leading-relaxed mb-8">
+                                    {item.description}
+                                </p>
                             </div>
 
                             <div className="relative z-10 pt-6 border-t border-gray-800 mt-auto">
-                                <div className="grid grid-cols-2 gap-4">
-                                    {study.results.map((result, i) => (
-                                        <div key={i}>
-                                            <p className="text-xs text-gray-500 mb-1">{result.metric}</p>
-                                            <div className="flex items-center gap-2">
-                                                <span className="text-sm text-gray-500 line-through">{result.old}</span>
-                                                <svg className="w-3 h-3 text-neon-lime" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
-                                                </svg>
-                                                <span className="text-lg font-bold text-neon-lime">{result.new}</span>
-                                            </div>
-                                        </div>
+                                <p className="text-xs text-gray-500 mb-3 uppercase tracking-wider font-semibold">Deliverables</p>
+                                <div className="flex flex-wrap gap-2">
+                                    {item.deliverables.map((d, i) => (
+                                        <span key={i} className="text-xs bg-neon-lime/10 border border-neon-lime/20 text-neon-lime px-3 py-1 rounded-full font-medium">
+                                            {d}
+                                        </span>
                                     ))}
                                 </div>
                             </div>
                         </motion.div>
                     ))}
                 </div>
+
+                {/* CTA under methodology */}
+                <motion.div
+                    className="text-center mt-14 md:mt-20"
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.6, delay: 0.3 }}
+                >
+                    <p className="text-gray-400 text-base md:text-lg mb-6">
+                        Want to see how this applies to your business?
+                    </p>
+                    <a
+                        href={WHATSAPP_URL}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 bg-neon-lime text-black font-bold text-base px-8 py-4 rounded-xl hover:bg-neon-lime/90 transition-all duration-300 shadow-[0_0_20px_rgba(57,255,20,0.3)] hover:shadow-[0_0_30px_rgba(57,255,20,0.5)]"
+                    >
+                        Get Your Free Audit
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                        </svg>
+                    </a>
+                </motion.div>
             </div>
         </section>
     );

@@ -12,7 +12,7 @@ export const WHATSAPP_FAQ_URL = `https://wa.me/${WHATSAPP_PHONE}?text=${encodeUR
 
 export const SOCIAL_LINKS = {
     linkedin: 'https://www.linkedin.com/in/aazibtariq',
-    instagram: '#',
+    instagram: 'https://www.instagram.com/_growth_experts_/',
     twitter: '#',
     whatsapp: WHATSAPP_URL,
 };

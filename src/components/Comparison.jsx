@@ -27,24 +27,21 @@ const Comparison = () => {
     return (
         <section className="py-16 md:py-24 px-4 md:px-6">
             <div className="max-w-6xl mx-auto">
-                <motion.h2
-                    className="text-2xl sm:text-3xl md:text-5xl font-bold text-center mb-3 md:mb-4"
+                <motion.div
+                    className="text-center mb-10 md:mb-16"
                     initial={{ opacity: 0, y: 50 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     transition={{ duration: 0.6 }}
                 >
-                    Why Most Ads <span className="text-neon-lime">Fail</span>
-                </motion.h2>
-                <motion.p
-                    className="text-gray-400 text-center text-base md:text-lg mb-10 md:mb-16"
-                    initial={{ opacity: 0, y: 30 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.6, delay: 0.1 }}
-                >
-                    (And Why Ours Don't)
-                </motion.p>
+                    <p className="text-xs tracking-[0.3em] uppercase text-gray-500 font-data mb-3">THE DIFFERENCE</p>
+                    <h2 className="text-2xl sm:text-3xl md:text-5xl font-bold mb-3 md:mb-4">
+                        Why Most Ads Fail
+                    </h2>
+                    <p className="text-gray-300 text-base md:text-lg">
+                        (And Why Ours Don't)
+                    </p>
+                </motion.div>
 
                 {/* Mobile: Card layout, Desktop: Table */}
                 {/* Desktop Table */}

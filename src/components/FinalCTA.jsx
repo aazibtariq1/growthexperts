@@ -20,7 +20,7 @@ const FinalCTA = () => {
                 </motion.h2>
 
                 <motion.p
-                    className="text-lg md:text-xl text-gray-400 mb-8 md:mb-12 max-w-2xl mx-auto"
+                    className="text-lg md:text-xl text-gray-300 mb-8 md:mb-12 max-w-2xl mx-auto"
                     initial={{ opacity: 0, y: 30 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
@@ -33,7 +33,7 @@ const FinalCTA = () => {
                     href={WHATSAPP_URL}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-3 w-full sm:w-auto bg-neon-lime text-black font-bold text-lg md:text-xl px-10 md:px-16 py-5 md:py-6 rounded-xl hover:bg-neon-lime/90 transition-all duration-300 animate-pulse-glow justify-center"
+                    className="group inline-flex items-center gap-3 w-full sm:w-auto bg-neon-lime text-black font-bold text-lg md:text-xl px-10 md:px-16 py-5 md:py-6 rounded-xl hover:bg-neon-lime/90 transition-all duration-300 shadow-[0_0_30px_rgba(57,255,20,0.4)] hover:shadow-[0_0_50px_rgba(57,255,20,0.6)] justify-center"
                     initial={{ opacity: 0, y: 30 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}

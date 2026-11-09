@@ -1,15 +1,20 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Vapi from '@vapi-ai/web';
 
 // Initialize Vapi with the provided Public Key
 const vapi = new Vapi(import.meta.env.VITE_VAPI_PUBLIC_KEY);
 
+// Safety limits
+const MAX_CALL_DURATION = 300; // 5 minutes max (in seconds)
+
 const AIAssistant = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [callStatus, setCallStatus] = useState('inactive'); // inactive, loading, active
     const [errorMsg, setErrorMsg] = useState('');
     const [callDuration, setCallDuration] = useState(0);
+    const [isMuted, setIsMuted] = useState(false);
+    const maxDurationTimerRef = useRef(null);
 
     // Timer Logic
     useEffect(() => {
@@ -24,27 +29,44 @@ const AIAssistant = () => {
         return () => clearInterval(interval);
     }, [callStatus]);
 
+    // Auto-end call after MAX_CALL_DURATION to prevent token waste
+    useEffect(() => {
+        if (callDuration >= MAX_CALL_DURATION && callStatus === 'active') {
+            console.log(`Auto-ending call: reached ${MAX_CALL_DURATION}s limit`);
+            vapi.stop();
+            setCallStatus('inactive');
+            setIsOpen(false);
+        }
+    }, [callDuration, callStatus]);
+
     const formatTime = (seconds) => {
         const mins = Math.floor(seconds / 60);
         const secs = seconds % 60;
         return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
     };
 
+    // Remaining time warning (last 60 seconds)
+    const remainingTime = MAX_CALL_DURATION - callDuration;
+    const isNearEnd = callStatus === 'active' && remainingTime <= 60 && remainingTime > 0;
+
     useEffect(() => {
         // Vapi Event Listeners
         vapi.on('call-start', () => {
             setCallStatus('active');
+            setIsMuted(false);
         });
 
         vapi.on('call-end', () => {
             setCallStatus('inactive');
             setIsOpen(false);
+            setIsMuted(false);
         });
 
         vapi.on('error', (e) => {
             console.error('Vapi Error:', e);
             setCallStatus('inactive');
             setErrorMsg('Connection error. Please try again.');
+            setIsMuted(false);
         });
 
         return () => {
@@ -58,23 +80,26 @@ const AIAssistant = () => {
     const toggleCall = async () => {
         if (callStatus === 'active' || callStatus === 'loading') {
             setCallStatus('inactive');
+            setIsMuted(false);
             vapi.stop();
         } else {
             setCallStatus('loading');
             setErrorMsg('');
             try {
-                // If an Assistant ID is provided via ENV, start it. Otherwise throw an error.
                 const assistantId = import.meta.env.VITE_VAPI_ASSISTANT_ID;
                 if (!assistantId) {
                     throw new Error('VITE_VAPI_ASSISTANT_ID is missing');
                 }
 
-                await vapi.start(assistantId);
+                // Start with assistant overrides for silence protection
+                await vapi.start(assistantId, {
+                    maxDurationSeconds: MAX_CALL_DURATION,
+                    silenceTimeoutSeconds: 20,
+                });
             } catch (e) {
                 console.error('Failed to start Vapi call:', e);
                 setCallStatus('inactive');
 
-                // Handle specific mobile/network permission errors
                 if (e?.message?.includes('devices') || e?.name === 'NotAllowedError') {
                     setErrorMsg('Mic access denied. Mobile devices require HTTPS to use the microphone.');
                 } else if (e?.message?.includes('VITE_VAPI_ASSISTANT_ID')) {
@@ -86,6 +111,12 @@ const AIAssistant = () => {
         }
     };
 
+    const toggleMute = () => {
+        const newMuted = !isMuted;
+        setIsMuted(newMuted);
+        vapi.setMuted(newMuted);
+    };
+
     const handleOpenToggle = () => {
         if (!isOpen) {
             setIsOpen(true);
@@ -94,6 +125,7 @@ const AIAssistant = () => {
             if (callStatus === 'active' || callStatus === 'loading') {
                 vapi.stop();
                 setCallStatus('inactive');
+                setIsMuted(false);
             }
         }
     };
@@ -153,7 +185,22 @@ const AIAssistant = () => {
                                 <p className={`mt-6 text-base transition-colors duration-300 ${callStatus === 'active' ? 'text-white font-medium' : 'text-gray-400'}`}>
                                     {callStatus === 'inactive' ? 'Incoming Call...' : callStatus === 'loading' ? 'Connecting to secure line...' : formatTime(callDuration)}
                                 </p>
-                                {callStatus === 'active' && <p className="text-neon-lime text-sm mt-1 animate-pulse">Call in progress</p>}
+                                {callStatus === 'active' && !isNearEnd && <p className="text-neon-lime text-sm mt-1 animate-pulse">Call in progress</p>}
+
+                                {/* Near-end warning */}
+                                {isNearEnd && (
+                                    <p className="text-amber-400 text-sm mt-1 animate-pulse">
+                                        ⏱ {formatTime(remainingTime)} remaining
+                                    </p>
+                                )}
+
+                                {/* Muted indicator */}
+                                {isMuted && callStatus === 'active' && (
+                                    <p className="text-red-400 text-xs mt-2 flex items-center gap-1">
+                                        <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24"><path d="M1 1l22 22M9 9v3a3 3 0 005.12 2.12M15 9.34V5a3 3 0 00-5.94-.6" /><path d="M17 16.95A7 7 0 015 12m14 0a7 7 0 01-.11 1.23M12 19v4m-4 0h8" /></svg>
+                                        Microphone muted
+                                    </p>
+                                )}
 
                                 {errorMsg && (
                                     <p className="mt-6 text-sm text-red-500 bg-red-500/10 border border-red-500/20 py-3 px-4 rounded-xl animate-pulse text-center max-w-[90%]">
@@ -180,18 +227,25 @@ const AIAssistant = () => {
                                     </button>
                                 ) : (
                                     <>
+                                        {/* Mute button — functional */}
                                         <button
-                                            className="w-14 h-14 rounded-full bg-gray-800 text-white flex items-center justify-center hover:bg-gray-700 transition-colors border border-gray-700"
-                                            onClick={() => {/* Dummy mute logic */ }}
+                                            className={`w-14 h-14 rounded-full flex items-center justify-center transition-colors border ${isMuted ? 'bg-red-500/20 text-red-400 border-red-500/50 hover:bg-red-500/30' : 'bg-gray-800 text-white border-gray-700 hover:bg-gray-700'}`}
+                                            onClick={toggleMute}
                                         >
-                                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" /></svg>
+                                            {isMuted ? (
+                                                <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" /><path strokeLinecap="round" strokeLinejoin="round" d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2" /></svg>
+                                            ) : (
+                                                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" /></svg>
+                                            )}
                                         </button>
+                                        {/* End call button */}
                                         <button
                                             onClick={toggleCall}
                                             className="w-20 h-20 rounded-full bg-red-500 text-white flex items-center justify-center hover:bg-red-600 hover:scale-105 hover:shadow-[0_0_30px_rgba(239,68,68,0.5)] transition-all duration-300 shadow-[0_0_20px_rgba(239,68,68,0.4)] transform"
                                         >
                                             <svg className="w-10 h-10 transform rotate-[135deg]" fill="currentColor" viewBox="0 0 24 24"><path d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" /></svg>
                                         </button>
+                                        {/* Keypad button */}
                                         <button
                                             className="w-14 h-14 rounded-full bg-gray-800 text-white flex items-center justify-center hover:bg-gray-700 transition-colors border border-gray-700"
                                             onClick={() => {/* Dummy keypad logic */ }}

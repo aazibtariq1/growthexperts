@@ -1,3 +1,6 @@
+/* Import DM Mono for data/number display */
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -19,22 +22,34 @@ body {
   overflow-x: hidden;
 }
 
-/* Custom scrollbar */
+/* Reduced motion — disable all decorative animations */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+/* Custom scrollbar — dimmer lime so it doesn't compete with CTAs */
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #050505;
+  background: #0a0a0a;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #39FF14;
-  border-radius: 4px;
+  background: #1a4d05;
+  border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #2ecc10;
+  background: #2a6e08;
 }
 
 /* Glow text effect */
@@ -45,6 +60,12 @@ body {
 /* Glow border effect */
 .glow-border {
   box-shadow: 0 0 15px rgba(57, 255, 20, 0.4), 0 0 30px rgba(57, 255, 20, 0.2);
+}
+
+/* Monospace font for data/numbers */
+.font-data {
+  font-family: 'DM Mono', 'Courier New', monospace;
+  font-variant-numeric: tabular-nums;
 }
 
 /* Animated mesh background */

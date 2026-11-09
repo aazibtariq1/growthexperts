@@ -47,24 +47,21 @@ const Services = () => {
     return (
         <section className="py-16 md:py-24 px-4 md:px-6">
             <div className="max-w-6xl mx-auto">
-                <motion.h2
-                    className="text-2xl sm:text-3xl md:text-5xl font-bold text-center mb-3 md:mb-4"
+                <motion.div
+                    className="text-center mb-10 md:mb-16"
                     initial={{ opacity: 0, y: 50 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     transition={{ duration: 0.6 }}
                 >
-                    Our <span className="text-neon-lime">Services</span>
-                </motion.h2>
-                <motion.p
-                    className="text-gray-400 text-center text-base md:text-lg mb-10 md:mb-16"
-                    initial={{ opacity: 0, y: 30 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.6, delay: 0.1 }}
-                >
-                    Everything you need to scale profitably
-                </motion.p>
+                    <p className="text-xs tracking-[0.3em] uppercase text-gray-500 font-data mb-3">WHAT WE DO</p>
+                    <h2 className="text-2xl sm:text-3xl md:text-5xl font-bold mb-3 md:mb-4">
+                        Our <span className="text-neon-lime">Services</span>
+                    </h2>
+                    <p className="text-gray-300 text-base md:text-lg">
+                        Everything you need to scale profitably
+                    </p>
+                </motion.div>
 
                 {/* Bento Grid */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
@@ -91,7 +88,7 @@ const Services = () => {
                                     {service.title}
                                 </h3>
 
-                                <p className="text-gray-400 leading-relaxed text-sm md:text-base">
+                                <p className="text-gray-300 leading-relaxed text-sm md:text-base">
                                     {service.description}
                                 </p>
                             </div>

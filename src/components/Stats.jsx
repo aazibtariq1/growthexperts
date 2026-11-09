@@ -9,65 +9,90 @@ const CounterNumber = ({ end, suffix = '', duration = 2 }) => {
     useEffect(() => {
         if (!isInView) return;
 
+        // Respect reduced motion
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+            setCount(end);
+            return;
+        }
+
         let startTime;
         const animate = (timestamp) => {
             if (!startTime) startTime = timestamp;
             const progress = Math.min((timestamp - startTime) / (duration * 1000), 1);
-            // Ease out cubic
             const eased = 1 - Math.pow(1 - progress, 3);
             setCount(Math.floor(eased * end));
-
-            if (progress < 1) {
-                requestAnimationFrame(animate);
-            }
+            if (progress < 1) requestAnimationFrame(animate);
         };
-
         requestAnimationFrame(animate);
     }, [isInView, end, duration]);
 
-    return (
-        <span ref={ref} className="tabular-nums">
-            {count}{suffix}
-        </span>
-    );
+    return <span ref={ref} className="tabular-nums">{count}{suffix}</span>;
 };
 
 const Stats = () => {
-    const stats = [
-        { value: 2, suffix: 'M+', label: 'Ad Spend Managed', prefix: '$' },
-        { value: 150, suffix: '+', label: 'Clients Scaled', prefix: '' },
-        { value: 8, suffix: 'x', label: 'Average ROAS', prefix: '' },
-        { value: 97, suffix: '%', label: 'Client Retention', prefix: '' },
+    const lineItems = [
+        { label: 'Ad Spend Managed', value: 2, suffix: 'M+', prefix: '$', note: 'across all clients' },
+        { label: 'Clients Scaled',   value: 150, suffix: '+', prefix: '',  note: 'and counting' },
+        { label: 'Average ROAS',     value: 8,   suffix: 'x', prefix: '',  note: 'return on ad spend' },
+        { label: 'Client Retention', value: 97,  suffix: '%', prefix: '',  note: 'stay long-term' },
     ];
 
     return (
-        <section className="py-20 px-6 relative">
+        <section className="py-20 px-4 md:px-6 relative">
             <div className="absolute inset-0 bg-gradient-to-b from-transparent via-neon-lime/[0.02] to-transparent"></div>
-            <div className="max-w-6xl mx-auto relative z-10">
+            <div className="max-w-2xl mx-auto relative z-10">
                 <motion.div
-                    className="grid grid-cols-2 md:grid-cols-4 gap-8"
+                    className="rounded-2xl border border-neon-lime/20 bg-surface/40 backdrop-blur-sm overflow-hidden"
                     initial={{ opacity: 0, y: 40 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     transition={{ duration: 0.6 }}
                 >
-                    {stats.map((stat, index) => (
-                        <motion.div
-                            key={index}
-                            className="text-center p-6 rounded-2xl border border-gray-800/50 bg-surface/30 backdrop-blur-sm hover:border-neon-lime/30 transition-all duration-300"
-                            initial={{ opacity: 0, y: 30 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true }}
-                            transition={{ duration: 0.5, delay: 0.1 * index }}
-                        >
-                            <div className="text-4xl md:text-5xl font-bold text-neon-lime mb-2">
-                                {stat.prefix}<CounterNumber end={stat.value} suffix={stat.suffix} />
+                    {/* Invoice header */}
+                    <div className="px-6 md:px-8 py-4 border-b border-neon-lime/10 flex items-center justify-between">
+                        <div>
+                            <p className="text-neon-lime font-data text-xs tracking-[0.2em] uppercase">GROWTH EXPERTS</p>
+                            <p className="text-gray-500 font-data text-xs mt-0.5">Performance Report · FY 2026</p>
+                        </div>
+                        <div className="text-right">
+                            <p className="text-gray-500 font-data text-xs">INV-001</p>
+                            <div className="mt-1 inline-flex items-center gap-1.5 bg-neon-lime/10 border border-neon-lime/20 rounded px-2 py-0.5">
+                                <span className="w-1.5 h-1.5 rounded-full bg-neon-lime motion-safe:animate-pulse"></span>
+                                <span className="text-neon-lime font-data text-xs">VERIFIED</span>
                             </div>
-                            <div className="text-gray-400 text-sm md:text-base">
-                                {stat.label}
-                            </div>
-                        </motion.div>
-                    ))}
+                        </div>
+                    </div>
+
+                    {/* Line items */}
+                    <div className="divide-y divide-gray-800/50">
+                        {lineItems.map((item, index) => (
+                            <motion.div
+                                key={index}
+                                className="px-6 md:px-8 py-4 flex items-center justify-between gap-4"
+                                initial={{ opacity: 0, x: -20 }}
+                                whileInView={{ opacity: 1, x: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ duration: 0.4, delay: 0.1 * index }}
+                            >
+                                <div>
+                                    <p className="text-gray-300 text-sm font-medium">{item.label}</p>
+                                    <p className="text-gray-600 font-data text-xs mt-0.5">{item.note}</p>
+                                </div>
+                                <div className="text-right shrink-0">
+                                    <p className="text-neon-lime font-data font-medium text-xl md:text-2xl">
+                                        {item.prefix}<CounterNumber end={item.value} suffix={item.suffix} />
+                                    </p>
+                                </div>
+                            </motion.div>
+                        ))}
+                    </div>
+
+                    {/* Invoice footer */}
+                    <div className="px-6 md:px-8 py-4 border-t border-neon-lime/10 bg-neon-lime/[0.03]">
+                        <p className="text-gray-500 font-data text-xs text-center">
+                            Results verified · No vanity metrics · Revenue-first approach
+                        </p>
+                    </div>
                 </motion.div>
             </div>
         </section>

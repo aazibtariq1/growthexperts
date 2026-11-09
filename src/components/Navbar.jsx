@@ -72,8 +72,8 @@ const Navbar = () => {
                         : 'bg-transparent border border-transparent'
                 }`}>
                     {/* Logo */}
-                    <a href="#" onClick={() => { window.location.hash = ''; window.scrollTo({top: 0, behavior: 'smooth'}); }} className="text-lg md:text-xl font-bold shrink-0">
-                        <span className="text-neon-lime">Growth</span> Experts
+                    <a href="#" onClick={() => { window.location.hash = ''; window.scrollTo({top: 0, behavior: 'smooth'}); }} className="flex items-center gap-2 shrink-0 group">
+                        <img src="/logo-cropped.png" alt="Growth Experts" className="h-7 md:h-8 w-auto object-contain transition-transform duration-300 group-hover:scale-105" />
                     </a>
 
                     {/* Desktop Nav Links */}
@@ -96,9 +96,12 @@ const Navbar = () => {
                             href={WHATSAPP_URL}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="bg-neon-lime text-black font-bold text-xs md:text-sm px-3 md:px-5 py-2 md:py-2.5 rounded-lg hover:bg-neon-lime/90 transition-all duration-300 shadow-[0_0_10px_rgba(57,255,20,0.3)]"
+                            className="group inline-flex items-center gap-1.5 bg-neon-lime text-black font-bold text-xs md:text-sm px-3 md:px-5 py-2 md:py-2.5 rounded-lg hover:bg-neon-lime/90 transition-all duration-300 shadow-[0_0_10px_rgba(57,255,20,0.3)]"
                         >
-                            Free Audit ➔
+                            Free Audit
+                            <svg className="w-3.5 h-3.5 transition-transform duration-300 group-hover:translate-x-0.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                            </svg>
                         </a>
 
                         {/* Mobile Hamburger */}
@@ -169,12 +172,15 @@ const Navbar = () => {
                                 href={WHATSAPP_URL}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="mt-4 bg-neon-lime text-black font-bold text-lg px-8 py-3.5 rounded-xl shadow-[0_0_20px_rgba(57,255,20,0.3)]"
+                                className="group mt-4 inline-flex items-center gap-2 bg-neon-lime text-black font-bold text-lg px-8 py-3.5 rounded-xl shadow-[0_0_20px_rgba(57,255,20,0.3)]"
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: 0.4 }}
                             >
-                                Get Free Audit ➔
+                                Get Free Audit
+                                <svg className="w-5 h-5 transition-transform duration-300 group-hover:translate-x-1" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                                </svg>
                             </motion.a>
                         </motion.div>
                     </motion.div>

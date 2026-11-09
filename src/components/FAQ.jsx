@@ -8,11 +8,11 @@ const faqData = [
     },
     {
         question: 'What\'s the minimum ad budget I need?',
-        answer: 'We recommend a minimum of PKR 30,000/month for ad spend (separate from our management fee). This gives us enough room to test, iterate, and find winning audiences. The more budget, the faster we scale your results.',
+        answer: 'We recommend a minimum of $1,000 – $1,500/month for ad spend (separate from our management fee). This provides enough data velocity for algorithmic testing, creative iteration, and finding scalable winning audiences quickly.',
     },
     {
         question: 'Do you guarantee results?',
-        answer: 'We don\'t make empty promises — but our track record speaks for itself. We\'ve generated 2,000+ leads at costs as low as PKR 9 per conversation. If we don\'t believe we can deliver, we\'ll tell you upfront.',
+        answer: 'We don\'t make empty promises. Our approach is rooted in data-driven testing, psychology-based creatives, and relentless optimization. We measure success by ROAS and revenue — not vanity metrics. If we don\'t believe we can deliver for your specific business, we\'ll tell you upfront.',
     },
     {
         question: 'Which platforms do you run ads on?',
@@ -90,7 +90,7 @@ const FAQItem = ({ question, answer, isOpen, onClick, index }) => {
                     >
                         <div className="px-5 md:px-7 pb-5 md:pb-6">
                             <div className="h-px bg-gradient-to-r from-neon-lime/20 via-neon-lime/10 to-transparent mb-4"></div>
-                            <p className="text-gray-400 text-sm md:text-[15px] leading-relaxed">
+                            <p className="text-gray-300 text-sm md:text-[15px] leading-relaxed">
                                 {answer}
                             </p>
                         </div>
@@ -121,10 +121,11 @@ const FAQ = () => {
                     viewport={{ once: true }}
                     transition={{ duration: 0.6 }}
                 >
+                    <p className="text-xs tracking-[0.3em] uppercase text-gray-500 font-data mb-3">GOT QUESTIONS</p>
                     <h2 className="text-2xl sm:text-3xl md:text-5xl font-bold mb-3 md:mb-4">
-                        Got <span className="text-neon-lime">Questions?</span>
+                        We Have Answers
                     </h2>
-                    <p className="text-gray-400 text-base md:text-lg">
+                    <p className="text-gray-300 text-base md:text-lg">
                         Everything you need to know before we scale your business
                     </p>
                 </motion.div>
@@ -151,7 +152,7 @@ const FAQ = () => {
                     viewport={{ once: true }}
                     transition={{ duration: 0.5, delay: 0.2 }}
                 >
-                    <p className="text-gray-400 text-sm md:text-base mb-4">
+                    <p className="text-gray-300 text-sm md:text-base mb-4">
                         Still have questions? Let's talk.
                     </p>
                     <a

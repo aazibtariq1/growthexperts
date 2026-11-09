@@ -1,68 +1,44 @@
 import { motion } from 'framer-motion';
-import { useState } from 'react';
 
 const Testimonials = () => {
-    const testimonials = [
+    const approaches = [
         {
-            name: 'Ahmed R.',
-            business: 'Skills.com',
-            industry: 'EdTech',
-            quote: 'Growth Experts completely transformed our ad strategy. We went from burning money on ads to generating 1,167 conversations in a single campaign at just PKR 9 per lead. The ROI is insane.',
-            result: '1,167 Leads',
-            metric: 'PKR 9/Lead',
-            avatar: 'AR',
+            title: 'Psychology-Driven Creatives',
+            description: 'We don\'t just make ads — we engineer scroll-stopping creatives based on consumer psychology principles that trigger the "need to buy" response.',
+            icon: '🧠',
+            highlight: 'Behavioral Targeting',
         },
         {
-            name: 'Sara K.',
-            business: 'Luxe Interiors',
-            industry: 'Home & Garden',
-            quote: 'Before Growth Experts, we were spending lakhs with zero strategy. Now every rupee is tracked, and our showroom is packed with qualified buyers from Meta ads alone.',
-            result: '4.2x ROAS',
-            metric: '180K+ Reach',
-            avatar: 'SK',
+            title: 'Data-Backed Scaling',
+            description: 'Every campaign decision is backed by real-time data. We kill underperformers fast and double down on what\'s printing money for your business.',
+            icon: '📊',
+            highlight: 'Real-Time Optimization',
         },
         {
-            name: 'Hassan M.',
-            business: 'FitZone Gym',
-            industry: 'Health & Fitness',
-            quote: 'They didn\'t just run ads — they built an entire funnel. Our membership signups tripled in 2 months. The psychology-driven creatives actually convert.',
-            result: '3x Signups',
-            metric: '60 Days',
-            avatar: 'HM',
+            title: 'Full-Funnel Engineering',
+            description: 'From the first ad impression to the final conversion — we build the entire customer journey, not just run ads and hope for the best.',
+            icon: '⚡',
+            highlight: 'End-to-End System',
         },
         {
-            name: 'Fatima A.',
-            business: 'GlowUp Skincare',
-            industry: 'Beauty & Cosmetics',
-            quote: 'We tried 3 agencies before Growth Experts. None of them understood our audience like they do. 677 conversations from a single campaign — unheard of for our niche.',
-            result: '677 Leads',
-            metric: 'PKR 16/Lead',
-            avatar: 'FA',
+            title: 'AI-Powered Lead Qualification',
+            description: 'Our AI voice assistant qualifies leads 24/7 before they even reach your inbox — saving you time and ensuring you only talk to serious buyers.',
+            icon: '🤖',
+            highlight: 'Always-On Intelligence',
         },
         {
-            name: 'Bilal T.',
-            business: 'BuildRight Construction',
-            industry: 'Construction',
-            quote: 'As a construction company, we thought digital ads wouldn\'t work for us. Growth Experts proved us wrong. We\'re now getting high-ticket project inquiries directly on WhatsApp.',
-            result: '12x ROAS',
-            metric: '100K+ Reach',
-            avatar: 'BT',
+            title: 'Revenue-First Reporting',
+            description: 'We don\'t report on likes and impressions. We track ROAS, cost per lead, and actual revenue generated — the only metrics that matter.',
+            icon: '💰',
+            highlight: 'No Vanity Metrics',
         },
         {
-            name: 'Zainab N.',
-            business: 'LearnSmart Academy',
-            industry: 'Education',
-            quote: 'The team at Growth Experts is relentless. They scaled our ad account from PKR 7,500 to PKR 50,000/month while keeping the cost per lead lower than ever. Absolute game-changers.',
-            result: '254→1.1K Leads',
-            metric: 'Scaled 4x',
-            avatar: 'ZN',
+            title: 'Local Market Domination',
+            description: 'For service-based businesses, we combine Google Maps SEO with targeted Meta ads to make you the #1 choice in your area.',
+            icon: '📍',
+            highlight: 'Hyper-Local Strategy',
         },
     ];
-
-    const [activeIndex, setActiveIndex] = useState(0);
-
-    // Show 3 at a time on desktop, 1 on mobile
-    const visibleTestimonials = testimonials;
 
     return (
         <section className="py-16 md:py-24 px-4 md:px-6 relative overflow-hidden">
@@ -77,17 +53,18 @@ const Testimonials = () => {
                     viewport={{ once: true }}
                     transition={{ duration: 0.6 }}
                 >
+                    <p className="text-xs tracking-[0.3em] uppercase text-gray-500 font-data mb-3">OUR EDGE</p>
                     <h2 className="text-2xl sm:text-3xl md:text-5xl font-bold mb-3 md:mb-4">
-                        What Our <span className="text-neon-lime">Clients</span> Say
+                        What Sets Us Apart
                     </h2>
-                    <p className="text-gray-400 text-base md:text-lg">
-                        Real results from real businesses we've scaled
+                    <p className="text-gray-300 text-base md:text-lg">
+                        A smarter approach to scaling your business
                     </p>
                 </motion.div>
 
-                {/* Testimonial Cards Grid */}
+                {/* Approach Cards Grid */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-6">
-                    {visibleTestimonials.map((testimonial, index) => (
+                    {approaches.map((item, index) => (
                         <motion.div
                             key={index}
                             className="group relative rounded-2xl p-6 md:p-7 overflow-hidden cursor-default
@@ -103,61 +80,30 @@ const Testimonials = () => {
                             {/* Corner glow on hover */}
                             <div className="absolute -top-10 -right-10 w-32 h-32 bg-neon-lime/10 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
 
-                            {/* Quote icon */}
-                            <div className="text-neon-lime/20 text-5xl font-serif leading-none mb-3 select-none group-hover:text-neon-lime/40 transition-colors duration-300">
-                                "
+                            {/* Icon */}
+                            <div className="text-4xl mb-4 group-hover:scale-110 transition-transform duration-300">
+                                {item.icon}
                             </div>
 
-                            {/* Quote text */}
-                            <p className="text-gray-300 text-sm md:text-[15px] leading-relaxed mb-6 relative z-10">
-                                {testimonial.quote}
+                            {/* Title */}
+                            <h3 className="text-white font-bold text-lg mb-2 group-hover:text-neon-lime transition-colors duration-300">
+                                {item.title}
+                            </h3>
+
+                            {/* Description */}
+                            <p className="text-gray-300 text-sm md:text-[15px] leading-relaxed mb-5 relative z-10">
+                                {item.description}
                             </p>
 
-                            {/* Result badge */}
-                            <div className="flex items-center gap-3 mb-5">
+                            {/* Highlight badge */}
+                            <div className="inline-flex items-center gap-2">
                                 <div className="bg-neon-lime/10 border border-neon-lime/20 rounded-lg px-3 py-1.5">
-                                    <span className="text-neon-lime font-bold text-sm">{testimonial.result}</span>
-                                </div>
-                                <span className="text-gray-500 text-xs">{testimonial.metric}</span>
-                            </div>
-
-                            {/* Divider */}
-                            <div className="h-px bg-gradient-to-r from-transparent via-white/10 to-transparent mb-5"></div>
-
-                            {/* Author info */}
-                            <div className="flex items-center gap-3 relative z-10">
-                                {/* Avatar */}
-                                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-neon-lime/30 to-neon-lime/10 border border-neon-lime/20 flex items-center justify-center shrink-0">
-                                    <span className="text-neon-lime font-bold text-xs">{testimonial.avatar}</span>
-                                </div>
-                                <div>
-                                    <h4 className="text-white font-semibold text-sm">{testimonial.name}</h4>
-                                    <p className="text-gray-500 text-xs">{testimonial.business} · {testimonial.industry}</p>
+                                    <span className="text-neon-lime font-bold text-xs">{item.highlight}</span>
                                 </div>
                             </div>
                         </motion.div>
                     ))}
                 </div>
-
-                {/* Bottom stats strip */}
-                <motion.div
-                    className="mt-10 md:mt-14 grid grid-cols-3 gap-4 md:gap-6 max-w-3xl mx-auto"
-                    initial={{ opacity: 0, y: 30 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.6, delay: 0.3 }}
-                >
-                    {[
-                        { value: '2,098+', label: 'Leads Generated' },
-                        { value: '315K+', label: 'Total Reach' },
-                        { value: 'PKR 9', label: 'Lowest CPL' },
-                    ].map((stat, i) => (
-                        <div key={i} className="text-center">
-                            <div className="text-xl md:text-2xl font-bold text-neon-lime">{stat.value}</div>
-                            <div className="text-gray-500 text-xs md:text-sm mt-1">{stat.label}</div>
-                        </div>
-                    ))}
-                </motion.div>
             </div>
         </section>
     );
